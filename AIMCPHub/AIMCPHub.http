@@ -1,0 +1,6 @@
+@AIMCPHub_HostAddress = http://localhost:5208
+
+GET {{AIMCPHub_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

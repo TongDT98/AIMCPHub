@@ -1,0 +1,17 @@
+D:\AIMCPHub\AIMCPHub\App.DAL\bin\Debug\net8.0\App.DAL.deps.json
+D:\AIMCPHub\AIMCPHub\App.DAL\bin\Debug\net8.0\App.DAL.runtimeconfig.json
+D:\AIMCPHub\AIMCPHub\App.DAL\bin\Debug\net8.0\App.DAL.dll
+D:\AIMCPHub\AIMCPHub\App.DAL\bin\Debug\net8.0\App.DAL.pdb
+D:\AIMCPHub\AIMCPHub\App.DAL\obj\Debug\net8.0\App.DAL.csproj.AssemblyReference.cache
+D:\AIMCPHub\AIMCPHub\App.DAL\obj\Debug\net8.0\App.DAL.GeneratedMSBuildEditorConfig.editorconfig
+D:\AIMCPHub\AIMCPHub\App.DAL\obj\Debug\net8.0\App.DAL.AssemblyInfoInputs.cache
+D:\AIMCPHub\AIMCPHub\App.DAL\obj\Debug\net8.0\App.DAL.AssemblyInfo.cs
+D:\AIMCPHub\AIMCPHub\App.DAL\obj\Debug\net8.0\App.DAL.csproj.CoreCompileInputs.cache
+D:\AIMCPHub\AIMCPHub\App.DAL\obj\Debug\net8.0\App.DAL.dll
+D:\AIMCPHub\AIMCPHub\App.DAL\obj\Debug\net8.0\refint\App.DAL.dll
+D:\AIMCPHub\AIMCPHub\App.DAL\obj\Debug\net8.0\App.DAL.pdb
+D:\AIMCPHub\AIMCPHub\App.DAL\obj\Debug\net8.0\App.DAL.genruntimeconfig.cache
+D:\AIMCPHub\AIMCPHub\App.DAL\obj\Debug\net8.0\ref\App.DAL.dll
+D:\AIMCPHub\AIMCPHub\App.DAL\bin\Debug\net8.0\App.Core.dll
+D:\AIMCPHub\AIMCPHub\App.DAL\bin\Debug\net8.0\App.Core.pdb
+D:\AIMCPHub\AIMCPHub\App.DAL\obj\Debug\net8.0\App.DAL.csproj.Up2Date
