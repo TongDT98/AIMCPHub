@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AIMCPHub")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fb7b23224b58c39c6b5f915b804153e1d21dc617")]
 [assembly: System.Reflection.AssemblyProductAttribute("AIMCPHub")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AIMCPHub")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
