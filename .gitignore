@@ -1,0 +1,10 @@
+.vs/
+*.suo
+*.user
+
+# Build folders
+bin/
+obj/
+
+# VS cache
+.vs/**/FileContentIndex/
