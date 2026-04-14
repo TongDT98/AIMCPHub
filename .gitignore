@@ -1,10 +1,13 @@
+**/bin/
+**/obj/
+
+# Visual Studio
 .vs/
 *.suo
-*.user
+*.suo
 
-# Build folders
-bin/
-obj/
 
 # VS cache
 .vs/**/FileContentIndex/
+**/bin/
+**/obj/

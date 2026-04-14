@@ -10,6 +10,6 @@ namespace App.Bussiness.DTOS.Request.Transaction
     {
         public decimal Amount { get; set; }
         public string OrderInfo { get; set; }
-        public string OrderId { get; set; }
+       // public string OrderId { get; set; }
     }
 }

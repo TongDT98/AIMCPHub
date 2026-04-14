@@ -22,6 +22,8 @@ namespace App.DAL
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<UserPermission> UserPermissions { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<VnpReturnUrlLog> VnpReturnUrlLogs { get; set; }
+        public DbSet<VnpIpnLog> vnpIpnLogs { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.EnableSensitiveDataLogging();

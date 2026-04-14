@@ -24,6 +24,13 @@ namespace App.Bussiness.DTOS.Response
             Success = true;
             HttpStatusCode = 200;
         }
+        public GenericActionResult(string errorcode, string message,int httpstatus)
+        {
+            Success = false;
+            HttpStatusCode = httpstatus;
+            ErrorCode = errorcode;
+            Message = message;
+        }
         public GenericActionResult(int objCount, object data)
         {
             Success = true;

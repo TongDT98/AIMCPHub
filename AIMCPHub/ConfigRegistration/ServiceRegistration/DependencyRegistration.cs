@@ -18,9 +18,11 @@ namespace AIMCPHub.ConfigRegistration.ServiceRegistration
             services.AddTransient<IPermissionModuleRepository,PermisionModuleRepository>();
             services.AddTransient<IRoleRepository,RoleRepository>();
             services.AddTransient<ITransactionRepository,TransactionRepository>();
-
+            services.AddTransient<IVnpReturnUrlLogRepository,VnpReturnUrlLogRepository>();
+            services.AddTransient<IVnpIpnLogRepository,VnpIpnLogRepository>();
             #endregion
             services.AddTransient<IUserService, UserService>();
+            services.AddTransient<ITransactionService,TransactionService>();
 
         }
     }
