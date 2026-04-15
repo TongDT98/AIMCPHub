@@ -12,14 +12,14 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.WebHost.ConfigureKestrel(options =>
-{
-    if (builder.Environment.IsEnvironment("Testing"))
-    {
-        // Nghe trên tất cả IP của máy tại port 5000 khi Testing
-        options.ListenAnyIP(5000);
-    }
-});
+//builder.WebHost.ConfigureKestrel(options =>
+//{
+//    if (builder.Environment.IsEnvironment("Testing"))
+//    {
+//        // Nghe trên tất cả IP của máy tại port 5000 khi Testing
+//        options.ListenAnyIP(5000);
+//    }
+//});
 // connect string 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
