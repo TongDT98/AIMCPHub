@@ -23,6 +23,7 @@ namespace AIMCPHub.ConfigRegistration.ServiceRegistration
             #endregion
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<ITransactionService,TransactionService>();
+            services.AddTransient<IAuthService,AuthService>();
 
         }
     }

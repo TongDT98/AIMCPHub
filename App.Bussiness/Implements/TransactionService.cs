@@ -31,7 +31,7 @@ namespace App.Bussiness.Implements
             _ipnRepository = ipnlog;
             _returnUrlLogRepository = returnurl;
         }
-    
+       
         public GenericActionResult CreatePaymentUrl(PaymentRequest payment, string ip)
         {
             try
@@ -159,11 +159,11 @@ namespace App.Bussiness.Implements
                 _returnUrlLogRepository.Add(rtn);
                 _returnUrlLogRepository.SaveChange();
                 _transaction.SaveChange();
-                return new VnPayResponse();
+                return new VnPayResponse { RspCode = "00",Message = "Success"};
             }
             catch (Exception ex)
             {
-                return new VnPayResponse();
+                return new VnPayResponse { RspCode = "99", Message = "Erorr" };
             }
         }
 

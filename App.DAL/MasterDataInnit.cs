@@ -97,10 +97,10 @@ namespace App.DAL
                  new ApplicationUser
                  {
                      Id = new Guid("bc6bab7a-67ca-4e2e-bde1-a51c44e58091"),
-                     FirstName = "Administrator",
+                     FirstName = "Accounting",
                      Mobile = "1234566798",
-                     Email = "admin@gmail.com",
-                     UserName = "admin@gmail.com",
+                     Email = "accounting@gmail.com",
+                     UserName = "accounting@gmail.com",
                      RoleId = new Guid("a4571b49-9174-49d7-9c1a-ba8c916b1b55"),
                      DepartmentId = new Guid("71822f66-6763-47cd-aea7-2269f495c733"),
                      PasswordSalt = Convert.ToBase64String(salt),

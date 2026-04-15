@@ -25,6 +25,27 @@ namespace AIMCPHub.Helpper
 
             return checkHash == query["vnp_SecureHash"];
         }
+        public static bool ValidateSignature1(IQueryCollection query, string hashSecret)
+        {
+            var data = new SortedList<string, string>();
+
+            foreach (var key in query.Keys)
+            {
+                // VNPAY chỉ băm các field bắt đầu bằng vnp_ và bỏ qua chính cái hash
+                if (!string.IsNullOrEmpty(key) && key.StartsWith("vnp_") && key != "vnp_SecureHash")
+                {
+                    data.Add(key, query[key]);
+                }
+            }
+
+            // Cần UrlEncode để khớp với chuỗi gốc của VNPAY
+            var raw = string.Join("&", data.Select(x =>
+                $"{System.Net.WebUtility.UrlEncode(x.Key)}={System.Net.WebUtility.UrlEncode(x.Value)}"));
+
+            var checkHash = HashSHA.HmacSHA512(hashSecret, raw);
+
+            return checkHash.Equals(query["vnp_SecureHash"], StringComparison.InvariantCultureIgnoreCase);
+        }
         public static VnPayCallbackDto GetDataVnpCallback(IQueryCollection query,string requestData)
         {
             try
