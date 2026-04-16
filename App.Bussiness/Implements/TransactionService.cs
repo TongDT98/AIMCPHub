@@ -13,6 +13,7 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace App.Bussiness.Implements
 {
@@ -141,13 +142,13 @@ namespace App.Bussiness.Implements
                 return new GenericActionResult("500",ex.Message,(int)HttpStatusCode.InternalServerError);
             }
         }
-        public VnPayResponse HandlerVnpayIPN(VnPayCallbackDto request)
+        public VnPayResponse HandlerVnpayIPN(VnPayCallbackDto request,bool valid)
         {
             try
             {
                 
                 var transaction = _transaction.Queryable().FirstOrDefault(x=> x.Vnp_TxnRef == request.Vnp_TxnRef);
-                if (transaction == null) return new VnPayResponse{ Message = "Không tìm tháy transaction"};
+               // if (transaction == null) return new VnPayResponse{ Message = "Không tìm tháy transaction"};
                 transaction.IsIPN = true;
                 var ipn = new VnpIpnLog
                 {
@@ -164,11 +165,13 @@ namespace App.Bussiness.Implements
                      Vnp_TmnCode = request.Vnp_TmnCode,
                      Vnp_TransactionNo = request.Vnp_TransactionNo,
                      Vnp_TransactionStatus = request.Vnp_TransactionStatus,
-                     Vnp_TxnRef = request.Vnp_TxnRef,                    
+                     Vnp_TxnRef = request.Vnp_TxnRef,   
+                     IsActived = valid
                 };
                 _ipnRepository.Add(ipn);
                 _ipnRepository.SaveChange();
                 _transaction.SaveChange();
+                if(!valid) return new VnPayResponse { RspCode = "97", Message = "Chữ kí không hợp lệ." };
                 return new VnPayResponse { RspCode = "00",Message = "Success"};
             }
             catch (Exception ex)
@@ -176,7 +179,7 @@ namespace App.Bussiness.Implements
                 return new VnPayResponse { RspCode = "99", Message = "Erorr" };
             }
         }
-        public VnPayResponse HandlerVnpayReturn(VnPayCallbackDto request)
+        public VnPayResponse HandlerVnpayReturn(VnPayCallbackDto request,bool isvalid)
         {
             try
             {
@@ -200,10 +203,12 @@ namespace App.Bussiness.Implements
                     Vnp_TransactionNo = request.Vnp_TransactionNo,
                     Vnp_TransactionStatus = request.Vnp_TransactionStatus,
                     Vnp_TxnRef = request.Vnp_TxnRef,
+                    IsActived = isvalid
                 };
                 _returnUrlLogRepository.Add(rtn);
                 _returnUrlLogRepository.SaveChange();
                 _transaction.SaveChange();
+                if (!isvalid) return new VnPayResponse { RspCode = "97", Message = "Chữ kí không hợp lệ." };
                 return new VnPayResponse { RspCode = "00",Message = "Success"};
             }
             catch (Exception ex)

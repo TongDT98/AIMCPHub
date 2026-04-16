@@ -43,10 +43,12 @@ namespace AIMCPHub.Controllers
             var requestData = Request.QueryString.Value ?? "";
             _logger.LogInformation($"[{DateTime.Now.ToString("yyyyMMddHHmmss")}] VNP IPN : {requestData}");
             if (query == null) return Ok(new VnPayResponse {RspCode = "99",Message = "Request is empty"});
-            //var validSerect = VnPayHelpper.ValidateSignature(query, _config["VnPay:HashSecret"] ?? "");
-           // if (!validSerect) return Ok(new VnPayResponse { RspCode = "97", Message = "Invalid signature" });
+            var validSerect = VnPayHelpper.ValidateSignature(query, _config["VnPay:HashSecret"] ?? "");
+            if (!validSerect)
+                _logger.LogError("Secretkey invalid");
+                //return Ok(new VnPayResponse { RspCode = "97", Message = "Invalid signature" });
             var dataReuest = VnPayHelpper.GetDataVnpCallback(query,requestData);
-            return Ok( _transactionService.HandlerVnpayIPN(dataReuest));
+            return Ok( _transactionService.HandlerVnpayIPN(dataReuest,validSerect));
             
         }
         [HttpGet("return-url")]
@@ -55,10 +57,12 @@ namespace AIMCPHub.Controllers
             var query = Request.Query;
             var requestData = Request.QueryString.Value ?? "";
             _logger.LogInformation($"[{DateTime.Now.ToString("yyyyMMddHHmmss")}] VNP IPN : {requestData}");
-            if (query == null) return Ok(new VnPayResponse { RspCode = "99", Message = "Request is empty" });
+            if (query == null) return Ok(new VnPayResponse { RspCode = "99", Message = "Request is empty" });          
             var validSerect = VnPayHelpper.ValidateSignature(query, _config["VnPay:HashSecret"] ?? "");
+            if (!validSerect)
+                _logger.LogError("Secretkey invalid");
             var dataReuest = VnPayHelpper.GetDataVnpCallback(query, requestData);
-            return Ok(_transactionService.HandlerVnpayReturn(dataReuest));           
+            return Ok(_transactionService.HandlerVnpayReturn(dataReuest, validSerect));           
         }
     }
 }

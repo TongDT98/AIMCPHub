@@ -1,50 +1,54 @@
 ﻿using App.Bussiness.DTOS.Response.Transaction;
 using App.Core.Helper;
+using System.Net;
+using System.Text;
 
 namespace AIMCPHub.Helpper
 {
     public static class VnPayHelpper
     {
-        public static bool ValidateSignature(IQueryCollection query,string hashSecret)
+        
+        public static bool ValidateSignature(IQueryCollection queryString, string secretKey)
         {
-          
+            var vnpayData = new SortedList<string, string>();
+            string vnp_SecureHash = "";
 
-            var data = new SortedList<string, string>();
-
-            foreach (var key in query.Keys)
+            // 1. Lấy toàn bộ dữ liệu từ QueryString
+            foreach (var key in queryString.Keys)
             {
-                if (key.StartsWith("vnp_") && key != "vnp_SecureHash")
+                var value = queryString[key].ToString();
+                if (!string.IsNullOrEmpty(key) && key.StartsWith("vnp_"))
                 {
-                    data.Add(key, query[key]);
+                    if (key == "vnp_SecureHash")
+                    {
+                        vnp_SecureHash = value;
+                    }
+                    else
+                    {
+                        vnpayData.Add(key, value);
+                    }
                 }
             }
 
-            var raw = string.Join("&", data.Select(x => $"{x.Key}={x.Value}"));
-
-            var checkHash = HashSHA.HmacSHA512(hashSecret, raw);
-
-            return checkHash == query["vnp_SecureHash"];
-        }
-        public static bool ValidateSignature1(IQueryCollection query, string hashSecret)
-        {
-            var data = new SortedList<string, string>();
-
-            foreach (var key in query.Keys)
+            // 2. Tạo chuỗi dữ liệu để kiểm tra (Raw Data)
+            // Chú ý: Phải dùng WebUtility.UrlEncode để khớp với cách VNPAY băm dữ liệu
+            StringBuilder data = new StringBuilder();
+            foreach (var kv in vnpayData)
             {
-                // VNPAY chỉ băm các field bắt đầu bằng vnp_ và bỏ qua chính cái hash
-                if (!string.IsNullOrEmpty(key) && key.StartsWith("vnp_") && key != "vnp_SecureHash")
+                if (!string.IsNullOrEmpty(kv.Value))
                 {
-                    data.Add(key, query[key]);
+                    data.Append(WebUtility.UrlEncode(kv.Key) + "=" + WebUtility.UrlEncode(kv.Value) + "&");
                 }
             }
 
-            // Cần UrlEncode để khớp với chuỗi gốc của VNPAY
-            var raw = string.Join("&", data.Select(x =>
-                $"{System.Net.WebUtility.UrlEncode(x.Key)}={System.Net.WebUtility.UrlEncode(x.Value)}"));
+            // Xóa dấu & cuối cùng
+            string rawData = data.ToString().TrimEnd('&');
 
-            var checkHash = HashSHA.HmacSHA512(hashSecret, raw);
+            // 3. Tính toán lại mã Hash từ dữ liệu nhận được
+            string checkSum = HashSHA.HmacSHA512(secretKey, rawData);
 
-            return checkHash.Equals(query["vnp_SecureHash"], StringComparison.InvariantCultureIgnoreCase);
+            // 4. So sánh mã vừa tính với mã VNPAY gửi sang
+            return checkSum.Equals(vnp_SecureHash, StringComparison.InvariantCultureIgnoreCase);
         }
         public static VnPayCallbackDto GetDataVnpCallback(IQueryCollection query,string requestData)
         {

@@ -12,7 +12,7 @@ namespace App.Bussiness.Interfaces
    public interface ITransactionService
     {
         GenericActionResult CreatePaymentUrl(PaymentRequest payment, string ip);
-        VnPayResponse HandlerVnpayIPN(VnPayCallbackDto request);
-        VnPayResponse HandlerVnpayReturn(VnPayCallbackDto request);
+        VnPayResponse HandlerVnpayIPN(VnPayCallbackDto request,bool isvalid);
+        VnPayResponse HandlerVnpayReturn(VnPayCallbackDto request,bool isvalid);
     }
 }
