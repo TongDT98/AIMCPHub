@@ -26,8 +26,8 @@ namespace App.DAL.Entities
         [Description("Dữ liệu mở rộng, dạng json")]
         public string? ExtraProperties { get; set; }
         public Guid? CreatedBy { get; set; }
-        public DateTime CreatedDate { get; set; } = DateTime.Now;
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
         public Guid? LastUpdatedBy { get; set; }
-        public DateTime LastUpdatedDate { get; set; } = DateTime.Now;
+        public DateTime LastUpdatedDate { get; set; } = DateTime.UtcNow;
     }
 }

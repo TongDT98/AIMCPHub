@@ -4,6 +4,7 @@ using App.Bussiness.DTOS.Request.Transaction;
 using App.Bussiness.DTOS.Response;
 using App.Bussiness.DTOS.Response.Transaction;
 using App.Bussiness.Interfaces;
+using App.Core.Helper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -33,7 +34,9 @@ namespace AIMCPHub.Controllers
             // if (userRole != "Accounting") return new GenericActionResult { HttpStatusCode = 403,Message = "BẠn không có quyền tạo chuyenr khoản" };
             
             var ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "";
-            _logger.LogInformation($"[{DateTime.Now.ToString("yyyyMMddHHmmss")}] IP Create payment : {ip}");
+            if (ip.Length < 7) ip = "103.178.211.231"; // dia chi server
+            string time = TimezoneConvert.GetVietnamTimeString();
+            _logger.LogInformation($"[{time}] IP Create payment : {ip}");
             var url =  _transactionService.CreatePaymentUrl(req,ip);
             _logger.LogInformation($"[{DateTime.Now.ToString("yyyyMMddHHmmss")}] VNP Create Link : {url.Data}");
             return url;
@@ -43,7 +46,8 @@ namespace AIMCPHub.Controllers
         {
             var query = Request.Query;
             var requestData = Request.QueryString.Value ?? "";
-            _logger.LogInformation($"[{DateTime.Now.ToString("yyyyMMddHHmmss")}] VNP IPN : {requestData}");
+            string time = TimezoneConvert.GetVietnamTimeString();
+            _logger.LogInformation($"[{time}] VNP IPN : {requestData}");
             if (query == null) return Ok(new VnPayResponse {RspCode = "99",Message = "Request is empty"});
             var validSerect = VnPayHelpper.ValidateSignature(query, _config["VnPay:HashSecret"] ?? "");
             if (!validSerect)
@@ -58,7 +62,8 @@ namespace AIMCPHub.Controllers
         {
             var query = Request.Query;
             var requestData = Request.QueryString.Value ?? "";
-            _logger.LogInformation($"[{DateTime.Now.ToString("yyyyMMddHHmmss")}] VNP IPN : {requestData}");
+            string time = TimezoneConvert.GetVietnamTimeString();
+            _logger.LogInformation($"[{time}] VNP IPN : {requestData}");
             if (query == null) return Ok(new VnPayResponse { RspCode = "99", Message = "Request is empty" });          
             var validSerect = VnPayHelpper.ValidateSignature(query, _config["VnPay:HashSecret"] ?? "");
             if (!validSerect)

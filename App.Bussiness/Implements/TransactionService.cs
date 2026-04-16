@@ -37,7 +37,7 @@ namespace App.Bussiness.Implements
         {
             try
             {
-                 ip = "127.10.1.110";
+               //  ip = "127.10.1.110";
                 var date = DateTime.Now.ToString("yyyyMMdd");
                 /// oder code tạm thoi sing ngau nhien
                 var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(); // ms
@@ -50,13 +50,15 @@ namespace App.Bussiness.Implements
                 string curency = "VND";
                 string loce = "vn";
                 string ordertype = "other";
-                DateTime createdate = DateTime.Now;
-                DateTime ExDate = createdate.AddMinutes(10);
+                DateTime createdate = DateTime.UtcNow;
+                DateTime ExDate = createdate.AddMinutes(15);
+                string createtime = TimezoneConvert.GetVietnamTimeString(createdate);
+                string endtime = TimezoneConvert.GetVietnamTimeString(ExDate);
                 var vnp = new SortedList<string, string>();
 
                 vnp.Add("vnp_Amount", ((long)payment.Amount * 100).ToString());
                 vnp.Add("vnp_Command", paycommand);
-                vnp.Add("vnp_CreateDate", createdate.ToString("yyyyMMddHHmmss"));
+                vnp.Add("vnp_CreateDate", createtime);
                 vnp.Add("vnp_CurrCode", curency);
                 vnp.Add("vnp_IpAddr", ip);
                 vnp.Add("vnp_Locale", loce);
@@ -64,7 +66,7 @@ namespace App.Bussiness.Implements
                 vnp.Add("vnp_OrderType", ordertype);
                 vnp.Add("vnp_ReturnUrl", _config["VnPay:ReturnUrl"]);
                 vnp.Add("vnp_TmnCode", tmncode);
-                vnp.Add("vnp_ExpireDate", ExDate.ToString("yyyyMMddHHmmss"));
+                vnp.Add("vnp_ExpireDate", endtime);
                 vnp.Add("vnp_TxnRef", oderID);
                 vnp.Add("vnp_Version", version);
                 //var query = string.Join("&", vnp.Select(x => $"{x.Key}={Uri.EscapeDataString(x.Value)}"));
