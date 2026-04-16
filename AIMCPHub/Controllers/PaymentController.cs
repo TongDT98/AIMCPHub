@@ -16,8 +16,8 @@ namespace AIMCPHub.Controllers
     {
         private readonly ITransactionService _transactionService;
         private readonly IConfiguration _config;
-        private readonly ILogger _logger;
-        public PaymentController(ITransactionService transactionService, IConfiguration config, ILogger logger)
+        private readonly ILogger<PaymentController> _logger;
+        public PaymentController(ITransactionService transactionService, IConfiguration config, ILogger<PaymentController> logger)
         {
             _transactionService = transactionService;
             _config = config;
