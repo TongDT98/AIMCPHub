@@ -27,7 +27,7 @@ namespace App.DAL.Entities
         public string? Vnp_ReturnUrl { get; set; }
         public string? Vnp_TxnRef { get; set; }
         public string? Vnp_SecureHash { get; set; }
-        public TransactionStatus Status { get; set; }
+        public int Status { get; set; }
         public bool IsReturnUrl { get; set; } = false;
         public bool IsIPN { get; set; } = false;
     }

@@ -131,9 +131,10 @@ namespace App.Bussiness.Implements
                     Vnp_ReturnUrl = finalUrl,
                     Vnp_SecureHash = vnpSecureHash,
                     Vnp_TmnCode = tmncode,
-                    Vnp_TxnRef = oderID,  
+                    Vnp_TxnRef = oderID,
+                    Status = 0,
                     Amount = (double)payment.Amount,
-                    
+
                 };
                 _transaction.Add(newTransaction);
                 _transaction.SaveChange();               
@@ -148,37 +149,69 @@ namespace App.Bussiness.Implements
         {
             try
             {
-                
-                var transaction = _transaction.Queryable().FirstOrDefault(x=> x.Vnp_TxnRef == request.Vnp_TxnRef);
-               // if (transaction == null) return new VnPayResponse{ Message = "Không tìm tháy transaction"};
-                transaction.IsIPN = true;
-                var ipn = new VnpIpnLog
+                string vnpcode = "00";
+                string vnpMessage = "Thanh toán thành công";
+                var transaction = _transaction.QueryableAll().FirstOrDefault(x=> x.Vnp_TxnRef == request.Vnp_TxnRef);
+                // if (transaction == null) return new VnPayResponse{ Message = "Không tìm tháy transaction"};             
+                    var ipn = new VnpIpnLog
+                    {
+                        Id = Guid.NewGuid(),
+                        Vnp_PayDate = request.Vnp_PayDate,
+                        ExtraProperties = request.DataRequest,
+                        Vnp_Amount = request.Vnp_Amount,
+                        Vnp_BankCode = request.Vnp_BankCode,
+                        Vnp_BankTranNo = request.Vnp_BankTranNo,
+                        Vnp_CardType = request.Vnp_CardType,
+                        Vnp_OrderInfo = request.Vnp_OrderInfo,
+                        Vnp_ResponseCode = request.Vnp_ResponseCode,
+                        Vnp_SecureHash = request.Vnp_SecureHash,
+                        Vnp_TmnCode = request.Vnp_TmnCode,
+                        Vnp_TransactionNo = request.Vnp_TransactionNo,
+                        Vnp_TransactionStatus = request.Vnp_TransactionStatus,
+                        Vnp_TxnRef = request.Vnp_TxnRef,
+                        IsActived = valid
+                    };
+                    _ipnRepository.Add(ipn);
+                    _ipnRepository.SaveChange();
+                if (valid)
                 {
-                    Id = Guid.NewGuid(),
-                    Vnp_PayDate = request.Vnp_PayDate,
-                     ExtraProperties = request.DataRequest,
-                     Vnp_Amount = request.Vnp_Amount,
-                     Vnp_BankCode = request.Vnp_BankCode,
-                     Vnp_BankTranNo = request.Vnp_BankTranNo,
-                     Vnp_CardType = request.Vnp_CardType,
-                     Vnp_OrderInfo = request.Vnp_OrderInfo,
-                     Vnp_ResponseCode = request.Vnp_ResponseCode,
-                     Vnp_SecureHash = request.Vnp_SecureHash,
-                     Vnp_TmnCode = request.Vnp_TmnCode,
-                     Vnp_TransactionNo = request.Vnp_TransactionNo,
-                     Vnp_TransactionStatus = request.Vnp_TransactionStatus,
-                     Vnp_TxnRef = request.Vnp_TxnRef,   
-                     IsActived = valid
-                };
-                _ipnRepository.Add(ipn);
-                _ipnRepository.SaveChange();
-                _transaction.SaveChange();
-                if(!valid) return new VnPayResponse { RspCode = "97", Message = "Chữ kí không hợp lệ." };
-                return new VnPayResponse { RspCode = "00",Message = "Success"};
+                    if (transaction != null)
+                    {
+                        if (transaction.Status != 0)
+                        {
+                            var amount_recall = double.TryParse(request.Vnp_Amount, out double rqamount) ? rqamount : 0;
+                            if (transaction.Vnp_Amount != amount_recall)
+                            {
+                                transaction.IsIPN = true;
+                                if (request.Vnp_ResponseCode == "00" && request.Vnp_TransactionStatus == "00") transaction.Status = 1;
+                                else transaction.Status = 2;
+                                _transaction.SaveChange();
+                            }
+                            else
+                            {
+                                return new VnPayResponse { RspCode = "04", Message = "invalid amount" };
+                            }
+                        }
+                        else
+                        {
+                            return new VnPayResponse { RspCode = "02", Message = "Order already confirmed" };
+                        }
+                    }
+                    else
+                    {
+                        return new VnPayResponse { RspCode = "01", Message = " Order not found." };
+                    }
+                }
+                else
+                {
+                    return new VnPayResponse { RspCode = "97", Message = "Invalid signature" };
+                }
+                return new VnPayResponse { RspCode = "00", Message = " Confirm Success." };
+
             }
             catch (Exception ex)
             {
-                return new VnPayResponse { RspCode = "99", Message = "Erorr" };
+                return new VnPayResponse { RspCode = "99", Message = "Input data required" };
             }
         }
         public VnPayResponse HandlerVnpayReturn(VnPayCallbackDto request,bool isvalid)

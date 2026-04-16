@@ -38,7 +38,7 @@ namespace AIMCPHub.Controllers
             string time = TimezoneConvert.GetVietnamTimeString();
             _logger.LogInformation($"[{time}] IP Create payment : {ip}");
             var url =  _transactionService.CreatePaymentUrl(req,ip);
-            _logger.LogInformation($"[{DateTime.Now.ToString("yyyyMMddHHmmss")}] VNP Create Link : {url.Data}");
+            _logger.LogInformation($"[{time}] VNP Create Link : {url.Data}");
             return url;
         }     
         [HttpGet("ipn")]
@@ -48,7 +48,7 @@ namespace AIMCPHub.Controllers
             var requestData = Request.QueryString.Value ?? "";
             string time = TimezoneConvert.GetVietnamTimeString();
             _logger.LogInformation($"[{time}] VNP IPN : {requestData}");
-            if (query == null) return Ok(new VnPayResponse {RspCode = "99",Message = "Request is empty"});
+            if (query == null) return Ok(new VnPayResponse {RspCode = "99",Message = "Input data required" });
             var validSerect = VnPayHelpper.ValidateSignature(query, _config["VnPay:HashSecret"] ?? "");
             if (!validSerect)
                 _logger.LogError("Secretkey invalid");
@@ -57,14 +57,14 @@ namespace AIMCPHub.Controllers
             return Ok( _transactionService.HandlerVnpayIPN(dataReuest,validSerect));
             
         }
-        [HttpGet("return-url")]
+        [HttpGet("returnurl")]
         public IActionResult VnpayReturnUrl()
         {
             var query = Request.Query;
             var requestData = Request.QueryString.Value ?? "";
             string time = TimezoneConvert.GetVietnamTimeString();
-            _logger.LogInformation($"[{time}] VNP IPN : {requestData}");
-            if (query == null) return Ok(new VnPayResponse { RspCode = "99", Message = "Request is empty" });          
+            _logger.LogInformation($"[{time}] VNP Ruturn URL : {requestData}");
+            if (query == null) return Ok(new VnPayResponse { RspCode = "99", Message = "Input data required" });          
             var validSerect = VnPayHelpper.ValidateSignature(query, _config["VnPay:HashSecret"] ?? "");
             if (!validSerect)
                 _logger.LogError("Secretkey invalid");
