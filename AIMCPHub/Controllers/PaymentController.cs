@@ -16,10 +16,12 @@ namespace AIMCPHub.Controllers
     {
         private readonly ITransactionService _transactionService;
         private readonly IConfiguration _config;
-        public PaymentController(ITransactionService transactionService, IConfiguration config)
+        private readonly ILogger _logger;
+        public PaymentController(ITransactionService transactionService, IConfiguration config, ILogger logger)
         {
             _transactionService = transactionService;
             _config = config;
+            _logger = logger;
         }
         [Authorize]
        // [Authorize(Roles = "ACC")]
@@ -39,9 +41,10 @@ namespace AIMCPHub.Controllers
         {
             var query = Request.Query;
             var requestData = Request.QueryString.Value ?? "";
+            _logger.LogInformation($"[{DateTime.Now.ToString("yyyyMMddHHmmss")}] VNP IPN : {requestData}");
             if (query == null) return Ok(new VnPayResponse {RspCode = "99",Message = "Request is empty"});
-            var validSerect = VnPayHelpper.ValidateSignature(query, _config["VnPay:HashSecret"] ?? "");
-            if (!validSerect) return Ok(new VnPayResponse { RspCode = "97", Message = "Invalid signature" });
+            //var validSerect = VnPayHelpper.ValidateSignature(query, _config["VnPay:HashSecret"] ?? "");
+           // if (!validSerect) return Ok(new VnPayResponse { RspCode = "97", Message = "Invalid signature" });
             var dataReuest = VnPayHelpper.GetDataVnpCallback(query,requestData);
             return Ok( _transactionService.HandlerVnpayIPN(dataReuest));
             
@@ -51,6 +54,7 @@ namespace AIMCPHub.Controllers
         {
             var query = Request.Query;
             var requestData = Request.QueryString.Value ?? "";
+            _logger.LogInformation($"[{DateTime.Now.ToString("yyyyMMddHHmmss")}] VNP IPN : {requestData}");
             if (query == null) return Ok(new VnPayResponse { RspCode = "99", Message = "Request is empty" });
             var validSerect = VnPayHelpper.ValidateSignature(query, _config["VnPay:HashSecret"] ?? "");
             var dataReuest = VnPayHelpper.GetDataVnpCallback(query, requestData);

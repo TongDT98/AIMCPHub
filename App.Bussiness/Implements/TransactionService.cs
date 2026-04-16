@@ -36,6 +36,7 @@ namespace App.Bussiness.Implements
         {
             try
             {
+                 ip = "127.10.1.110";
                 var date = DateTime.Now.ToString("yyyyMMdd");
                 /// oder code tạm thoi sing ngau nhien
                 var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(); // ms
@@ -51,22 +52,66 @@ namespace App.Bussiness.Implements
                 DateTime createdate = DateTime.Now;
                 DateTime ExDate = createdate.AddMinutes(10);
                 var vnp = new SortedList<string, string>();
-                vnp.Add("vnp_Version", version);
+
+                vnp.Add("vnp_Amount", ((long)payment.Amount * 100).ToString());
                 vnp.Add("vnp_Command", paycommand);
-                vnp.Add("vnp_TmnCode", tmncode);
-                vnp.Add("vnp_Amount", amount.ToString());
                 vnp.Add("vnp_CreateDate", createdate.ToString("yyyyMMddHHmmss"));
-                vnp.Add("vnp_IpAddr", ip);
-                vnp.Add("vnp_ExpireDate", ExDate.ToString("yyyyMMddHHmmss"));
                 vnp.Add("vnp_CurrCode", curency);
+                vnp.Add("vnp_IpAddr", ip);
                 vnp.Add("vnp_Locale", loce);
-                vnp.Add("vnp_OrderInfo", payment.OrderInfo);
+                vnp.Add("vnp_OrderInfo", "Thanh toan don hang: " + oderID);
                 vnp.Add("vnp_OrderType", ordertype);
                 vnp.Add("vnp_ReturnUrl", _config["VnPay:ReturnUrl"]);
+                vnp.Add("vnp_TmnCode", tmncode);
+                vnp.Add("vnp_ExpireDate", ExDate.ToString("yyyyMMddHHmmss"));
                 vnp.Add("vnp_TxnRef", oderID);
-                var query = string.Join("&", vnp.Select(x => $"{x.Key}={Uri.EscapeDataString(x.Value)}"));
-                var hash = HashSHA.HmacSHA512(_config["VnPay:HashSecret"], query);
-                var url = $"{_config["VnPay:BaseUrl"]}?{query}&vnp_SecureHash={hash}";
+                vnp.Add("vnp_Version", version);
+                //var query = string.Join("&", vnp.Select(x => $"{x.Key}={Uri.EscapeDataString(x.Value)}"));
+                //var hash = HashSHA.HmacSHA512(_config["VnPay:HashSecret"], query);
+                //var url = $"{_config["VnPay:BaseUrl"]}?{query}&vnp_SecureHash={hash}";
+                /////
+                //var date = DateTime.Now;
+                //var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                //var random = new Random().Next(100, 999);
+                //var oderID = $"{date:yyyyMMdd}{timestamp}{random}";
+
+                //// 2. Sử dụng SortedList là đúng (để sắp xếp theo alphabet)
+                //var vnp = new SortedList<string, string>();
+                //vnp.Add("vnp_Amount", ((long)payment.Amount * 100).ToString());
+                //vnp.Add("vnp_Command", "pay");
+                //vnp.Add("vnp_CreateDate", date.ToString("yyyyMMddHHmmss"));
+                //vnp.Add("vnp_CurrCode", "VND");
+                //vnp.Add("vnp_IpAddr", ip);
+                //vnp.Add("vnp_Locale", "vn");
+                //vnp.Add("vnp_OrderInfo", "Thanh toan don hang: " + oderID); // Đảm bảo không có ký tự quá đặc biệt
+                //vnp.Add("vnp_OrderType", "other");
+                //vnp.Add("vnp_ReturnUrl", _config["VnPay:ReturnUrl"]);
+                //vnp.Add("vnp_TmnCode", _config["VnPay:TmnCode"]);
+                //vnp.Add("vnp_ExpireDate", date.AddMinutes(15).ToString("yyyyMMddHHmmss"));
+                //vnp.Add("vnp_TxnRef", oderID);
+                //vnp.Add("vnp_Version", "2.1.0");
+
+                // 3. Tạo chuỗi dữ liệu để băm (Raw Data)
+                // Lưu ý: VNPAY yêu cầu sử dụng WebUtility.UrlEncode hoặc một hàm chuẩn tương tự
+                StringBuilder data = new StringBuilder();
+                foreach (KeyValuePair<string, string> kv in vnp)
+                {
+                    if (!string.IsNullOrEmpty(kv.Value))
+                    {
+                        data.Append(WebUtility.UrlEncode(kv.Key) + "=" + WebUtility.UrlEncode(kv.Value) + "&");
+                    }
+                }
+
+                string queryString = data.ToString().TrimEnd('&');
+                string hashSecret = _config["VnPay:HashSecret"];
+
+                // 4. Tạo Hash (HmacSHA512)
+                // Lưu ý: Chuỗi đưa vào băm PHẢI là chuỗi chưa bị mã hóa URL hoặc mã hóa theo chuẩn VNPAY
+                // Ở đây tôi dùng chuỗi đã qua WebUtility.UrlEncode vì nó khớp với chuỗi trên URL
+                string vnpSecureHash = HashSHA.HmacSHA512(hashSecret, queryString);
+
+                // 5. Build URL cuối cùng
+                string finalUrl = _config["VnPay:BaseUrl"] + "?" + queryString + "&vnp_SecureHash=" + vnpSecureHash;
                 var newTransaction = new Transaction
                 {
                     Id = Guid.NewGuid(),
@@ -80,8 +125,8 @@ namespace App.Bussiness.Implements
                     Vnp_Locale = loce,
                     Vnp_OrderInfo = payment.OrderInfo,
                     Vnp_OrderType = ordertype,
-                    Vnp_ReturnUrl = url,
-                    Vnp_SecureHash = hash,
+                    Vnp_ReturnUrl = finalUrl,
+                    Vnp_SecureHash = vnpSecureHash,
                     Vnp_TmnCode = tmncode,
                     Vnp_TxnRef = oderID,  
                     Amount = (double)payment.Amount,
@@ -89,7 +134,7 @@ namespace App.Bussiness.Implements
                 };
                 _transaction.Add(newTransaction);
                 _transaction.SaveChange();               
-                return new GenericActionResult { Data = url };
+                return new GenericActionResult { Data = finalUrl };
             }
             catch (Exception ex) 
             {
@@ -124,11 +169,11 @@ namespace App.Bussiness.Implements
                 _ipnRepository.Add(ipn);
                 _ipnRepository.SaveChange();
                 _transaction.SaveChange();
-                return new VnPayResponse();
+                return new VnPayResponse { RspCode = "00",Message = "Success"};
             }
             catch (Exception ex)
             {
-                return new VnPayResponse();
+                return new VnPayResponse { RspCode = "99", Message = "Erorr" };
             }
         }
         public VnPayResponse HandlerVnpayReturn(VnPayCallbackDto request)
