@@ -29,11 +29,13 @@ namespace AIMCPHub.Controllers
         public GenericActionResult CreatePaymentLink([FromBody] PaymentRequest req)
         {
             var role = User.GetRole();
-           // var userRole = UserExtensions.GetRole();
-           // if (userRole != "Accounting") return new GenericActionResult { HttpStatusCode = 403,Message = "BẠn không có quyền tạo chuyenr khoản" };
-           var ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "";
-                       
+            // var userRole = UserExtensions.GetRole();
+            // if (userRole != "Accounting") return new GenericActionResult { HttpStatusCode = 403,Message = "BẠn không có quyền tạo chuyenr khoản" };
+            
+            var ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "";
+            _logger.LogInformation($"[{DateTime.Now.ToString("yyyyMMddHHmmss")}] IP Create payment : {ip}");
             var url =  _transactionService.CreatePaymentUrl(req,ip);
+            _logger.LogInformation($"[{DateTime.Now.ToString("yyyyMMddHHmmss")}] VNP Create Link : {url.Data}");
             return url;
         }     
         [HttpGet("ipn")]
