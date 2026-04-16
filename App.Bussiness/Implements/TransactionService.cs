@@ -68,34 +68,10 @@ namespace App.Bussiness.Implements
                 vnp.Add("vnp_TmnCode", tmncode);
                 vnp.Add("vnp_ExpireDate", endtime);
                 vnp.Add("vnp_TxnRef", oderID);
-                vnp.Add("vnp_Version", version);
-                //var query = string.Join("&", vnp.Select(x => $"{x.Key}={Uri.EscapeDataString(x.Value)}"));
-                //var hash = HashSHA.HmacSHA512(_config["VnPay:HashSecret"], query);
-                //var url = $"{_config["VnPay:BaseUrl"]}?{query}&vnp_SecureHash={hash}";
-                /////
-                //var date = DateTime.Now;
-                //var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-                //var random = new Random().Next(100, 999);
-                //var oderID = $"{date:yyyyMMdd}{timestamp}{random}";
-
-                //// 2. Sử dụng SortedList là đúng (để sắp xếp theo alphabet)
-                //var vnp = new SortedList<string, string>();
-                //vnp.Add("vnp_Amount", ((long)payment.Amount * 100).ToString());
-                //vnp.Add("vnp_Command", "pay");
-                //vnp.Add("vnp_CreateDate", date.ToString("yyyyMMddHHmmss"));
-                //vnp.Add("vnp_CurrCode", "VND");
-                //vnp.Add("vnp_IpAddr", ip);
-                //vnp.Add("vnp_Locale", "vn");
-                //vnp.Add("vnp_OrderInfo", "Thanh toan don hang: " + oderID); // Đảm bảo không có ký tự quá đặc biệt
-                //vnp.Add("vnp_OrderType", "other");
-                //vnp.Add("vnp_ReturnUrl", _config["VnPay:ReturnUrl"]);
-                //vnp.Add("vnp_TmnCode", _config["VnPay:TmnCode"]);
-                //vnp.Add("vnp_ExpireDate", date.AddMinutes(15).ToString("yyyyMMddHHmmss"));
-                //vnp.Add("vnp_TxnRef", oderID);
-                //vnp.Add("vnp_Version", "2.1.0");
+                vnp.Add("vnp_Version", version);              
 
                 // 3. Tạo chuỗi dữ liệu để băm (Raw Data)
-                // Lưu ý: VNPAY yêu cầu sử dụng WebUtility.UrlEncode hoặc một hàm chuẩn tương tự
+               
                 StringBuilder data = new StringBuilder();
                 foreach (KeyValuePair<string, string> kv in vnp)
                 {
@@ -109,8 +85,7 @@ namespace App.Bussiness.Implements
                 string hashSecret = _config["VnPay:HashSecret"];
 
                 // 4. Tạo Hash (HmacSHA512)
-                // Lưu ý: Chuỗi đưa vào băm PHẢI là chuỗi chưa bị mã hóa URL hoặc mã hóa theo chuẩn VNPAY
-                // Ở đây tôi dùng chuỗi đã qua WebUtility.UrlEncode vì nó khớp với chuỗi trên URL
+               
                 string vnpSecureHash = HashSHA.HmacSHA512(hashSecret, queryString);
 
                 // 5. Build URL cuối cùng
