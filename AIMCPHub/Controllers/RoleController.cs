@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Authorization;
 namespace AIMCPHub.Controllers
 {
     [ApiController]
-    [Route("api/payment")]
-    public class RoleController
+    [Route("api/role")]
+    public class RoleController : ControllerBase
     {
         private readonly IRoleService _roleService;
         public RoleController(IRoleService roleService) 
