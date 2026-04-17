@@ -24,6 +24,7 @@ namespace AIMCPHub.ConfigRegistration.ServiceRegistration
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<ITransactionService,TransactionService>();
             services.AddTransient<IAuthService,AuthService>();
+            services.AddTransient<IRoleService, RoleService>();
 
         }
     }

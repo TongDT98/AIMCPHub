@@ -13,5 +13,7 @@ namespace App.Bussiness.Interfaces
     {
         GenericActionResult GetUser(Guid id);
         GenericActionResult Search(FilterModel<SearchUserRequest> filter);
+        GenericActionResult CreateUser(CreateUSerRequest request);
+        GenericActionResult ChangePassword(ChangePasswordRequest request, Guid CurentId);
     }
 }

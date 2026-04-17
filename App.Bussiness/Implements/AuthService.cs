@@ -43,7 +43,7 @@ namespace App.Bussiness.Implements
             }
             byte[] saltBytes = Convert.FromBase64String(user.PasswordSalt);
             var pass = PasswordHasher.VerifyPassword(password, user.PasswordHash, saltBytes);
-
+            if (!pass) return new GenericActionResult("400", "Password incorrect",400);
             var role = _role.Queryable().FirstOrDefault(x=>x.Id == user.RoleId);
             var userauth = new AuthUserDto
             {

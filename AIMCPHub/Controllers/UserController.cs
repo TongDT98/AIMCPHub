@@ -1,8 +1,10 @@
-﻿using App.Bussiness.DTOS.Request;
+﻿using AIMCPHub.Utils.Extensions;
+using App.Bussiness.DTOS.Request;
 using App.Bussiness.DTOS.Request.User;
 using App.Bussiness.DTOS.Response;
 using App.Bussiness.Interfaces;
 using Azure.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,26 +32,19 @@ namespace AIMCPHub.Controllers
         {
             return _userService.Search(request);
         }
-        //public bool ValidateSignature(IQueryCollection query)
-        //{
-        //    var hashSecret = _config["VnPay:HashSecret"];
-
-        //    var data = new SortedList<string, string>();
-
-        //    foreach (var key in query.Keys)
-        //    {
-        //        if (key.StartsWith("vnp_") && key != "vnp_SecureHash")
-        //        {
-        //            data.Add(key, query[key]);
-        //        }
-        //    }
-
-        //    var raw = string.Join("&", data.Select(x => $"{x.Key}={x.Value}"));
-
-        //    var checkHash = HmacSHA512(hashSecret, raw);
-
-        //    return checkHash == query["vnp_SecureHash"];
-        //}
+        [HttpPost("Create")]
+        public GenericActionResult Create(CreateUSerRequest request)
+        {
+            return _userService.CreateUser(request);
+        }
+        [HttpPost("change-password")]
+        [Authorize]
+        public GenericActionResult ChangePassword(ChangePasswordRequest request)
+        {
+            var id = User.GetUserId();
+            Guid guidId = Guid.Parse(id);
+            return _userService.ChangePassword(request,guidId);
+        }
 
     }
 }
